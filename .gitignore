@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+dist/
+build/
+
+# C++ / CMake / Visual Studio
+/cpp/build/
+/build/
+out/
+.vs/
+*.obj
+*.pdb
+*.ilk
+*.exp
+*.lib
+*.user
+
+# Android
+/android/.gradle/
+/android/**/build/
+local.properties
+*.apk
+*.aab
+
+# Probe build output
+/tools/device-probe/bin/
+
+# Installer output
+/packaging/windows/Output/
+
+# Signing material, never commit
+*.pfx
+*.p12
+*.snk
+
+# Local files and editors
+.env
+.idea/
+.vscode/
+.claude/settings.local.json
+Thumbs.db
+desktop.ini

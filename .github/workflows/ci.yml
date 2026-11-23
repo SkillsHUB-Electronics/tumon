@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+# Placeholder pipeline for the documentation-only phase. When code arrives, add the Windows job that
+# builds the native camera DLL with MSVC (CMake), runs ctest and pytest, as Tapis does.
+jobs:
+  repo-structure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Required project files exist
+        run: |
+          for f in README.md CLAUDE.md AGENTS.md CHANGELOG.md ROADMAP.md CONTRIBUTING.md SECURITY.md \
+                   PRIVACY.md THIRD_PARTY_NOTICES.md CODE_OF_CONDUCT.md LICENSE .gitignore \
+                   docs/README.md docs/architecture.md docs/building.md docs/accessibility.md \
+                   docs/troubleshooting.md docs/releasing.md; do
+            test -f "$f" || { echo "missing: $f"; exit 1; }
+          done
+      - name: Changelog has an Unreleased section
+        run: grep -q '^## \[Unreleased\]' CHANGELOG.md

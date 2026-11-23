@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Troubleshooting guide
+    url: https://github.com/SkillsHUB-Electronics/tumon/blob/HEAD/docs/troubleshooting.md
+    about: Camera not listed in an app, black picture, install and uninstall problems.
+  - name: Report a security vulnerability
+    url: https://github.com/SkillsHUB-Electronics/tumon/security/advisories/new
+    about: Please report security problems privately.

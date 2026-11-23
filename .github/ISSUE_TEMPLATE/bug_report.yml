@@ -1,0 +1,57 @@
+name: Bug report
+description: Something does not work as expected.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! Please check [troubleshooting](https://github.com/SkillsHUB-Electronics/tumon/blob/HEAD/docs/troubleshooting.md) first.
+        Security problems: please use [a private report](https://github.com/SkillsHUB-Electronics/tumon/security/advisories/new) instead.
+        English or Bahasa Indonesia are both fine. Please do not attach video that shows other people.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open Tumon
+        2. Choose ... as the source
+        3. Open ... and look for "Tumon Camera"
+  - type: input
+    id: version
+    attributes:
+      label: Tumon version
+      description: Settings › About
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version
+      description: "Run `winver`. Tumon needs Windows 11 build 22000 or newer."
+      placeholder: "Windows 11 24H2 (build 26100)"
+    validations:
+      required: true
+  - type: input
+    id: app
+    attributes:
+      label: App that cannot see or use the camera (with version)
+      placeholder: "TeamTalk 5.23.0"
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Camera source
+      placeholder: "USB webcam, laptop camera, Android phone over Wi-Fi"
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots or anything else
