@@ -80,8 +80,19 @@ void FrameGenerator::Draw(int width, int height, uint64_t frame) {
 bool FrameGenerator::Write(PixelFormat format, uint8_t* dst, int stride, int width, int height, uint64_t frame) {
     if (!dst || width < 16 || height < 16 || (width & 1) || (height & 1)) return false;
     if (stride < DefaultStride(format, width)) return false;
-
     Draw(width, height, frame);
+    return WriteCanvas(format, dst, stride, width, height);
+}
+
+uint8_t* FrameGenerator::Canvas(int width, int height) {
+    bgra_.resize(static_cast<size_t>(width) * height * 4);
+    return bgra_.data();
+}
+
+bool FrameGenerator::WriteCanvas(PixelFormat format, uint8_t* dst, int stride, int width, int height) {
+    if (!dst || width < 16 || height < 16 || (width & 1) || (height & 1)) return false;
+    if (stride < DefaultStride(format, width)) return false;
+    if (bgra_.size() != static_cast<size_t>(width) * height * 4) return false;
     const uint8_t* src = bgra_.data();
     auto px = [&](int x, int y, int& r, int& g, int& b) {
         const uint8_t* p = src + (static_cast<size_t>(y) * width + x) * 4;

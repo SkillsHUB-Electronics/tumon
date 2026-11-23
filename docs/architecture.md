@@ -41,7 +41,14 @@
 - **Formats.** Offer several resolutions (for example 320×240, 640×480, 1280×720) and pixel formats. TeamTalk
   sends small video, so low resolutions matter more than 4K. Exact set is decided in Milestone 0 from what
   TeamTalk and the Windows Camera app negotiate.
-- **Shared memory channel.** A named memory-mapped ring buffer with a header (version, width, height, format,
+- **Shared memory channel: built (v1), see `cpp/src/channel/frame_channel.h`.** Named block
+  `Global\TumonCameraFrames-v1` created by the source (a service may create `Global` objects; a normal program may
+  not), opened by the feeder. Header + 3 YUY2 slots (max 1920x1080). No locks: each slot has a sequence number, 0
+  while being written, so a reader that copied a torn picture notices and skips it. A count of running streams lets
+  the feeder open the real camera only while Tumon Camera is in use (the camera light stays off otherwise). If the
+  feeder is silent for one second the source falls back to its test pattern. Access list: system, administrators,
+  Local Service, interactively logged-on users. The older sketch follows.
+- **Shared memory channel (original plan).** A named memory-mapped ring buffer with a header (version, width, height, format,
   frame counter) plus an event for new-frame signalling. The DLL treats it as untrusted: validate every field,
   bound every copy. Access limited to the signed-in user.
 - **No producer.** The camera stays listed and outputs a clear fallback picture, so apps never fail to open it.

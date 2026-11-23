@@ -14,11 +14,13 @@ add_compile_options(/W4 /permissive- /EHsc /Zc:__cplusplus)
 
 # --- the media source DLL (what the Frame Server loads) ---------------------------------------------
 add_library(tumon_source SHARED
+    src/channel/frame_channel.cpp
     src/source/activator.cpp
     src/source/dllmain.cpp
     src/source/frame_generator.cpp
     src/source/media_source.cpp
     src/source/media_stream.cpp
+    src/source/yuy2_scaler.cpp
     src/source/tumon_source.def)
 target_link_libraries(tumon_source PRIVATE mfplat mf mfuuid mfsensorgroup propsys ole32 uuid advapi32)
 
@@ -29,16 +31,27 @@ target_link_libraries(tumon_vcam_host PRIVATE mfplat mf mfsensorgroup ole32)
 add_executable(tumon_vcam_ctl tools/vcam_ctl.cpp)
 target_link_libraries(tumon_vcam_ctl PRIVATE mfplat mf mfuuid mfsensorgroup ole32)
 
+add_executable(tumon_feeder tools/feeder.cpp src/channel/frame_channel.cpp)
+target_link_libraries(tumon_feeder PRIVATE mfplat mf mfuuid mfreadwrite ole32 advapi32)
+
 add_executable(tumon_mfinfo tools/mf_info.cpp)
 target_link_libraries(tumon_mfinfo PRIVATE mfplat mf mfuuid mfreadwrite ole32)
 
-add_executable(tumon_selftest tools/selftest.cpp src/source/frame_generator.cpp)
-target_link_libraries(tumon_selftest PRIVATE mfplat mf mfuuid mfreadwrite ole32)
+add_executable(tumon_selftest tools/selftest.cpp src/source/frame_generator.cpp src/channel/frame_channel.cpp)
+target_link_libraries(tumon_selftest PRIVATE mfplat mf mfuuid mfreadwrite ole32 advapi32)
 add_dependencies(tumon_selftest tumon_source)
 
 # --- tests ------------------------------------------------------------------------------------------
 enable_testing()
 add_executable(test_frame_generator tests/test_frame_generator.cpp src/source/frame_generator.cpp)
 add_test(NAME frame_generator COMMAND test_frame_generator)
+
+add_executable(test_yuy2_scaler tests/test_yuy2_scaler.cpp src/source/yuy2_scaler.cpp)
+add_test(NAME yuy2_scaler COMMAND test_yuy2_scaler)
+
+add_executable(test_frame_channel tests/test_frame_channel.cpp src/channel/frame_channel.cpp)
+target_link_libraries(test_frame_channel PRIVATE advapi32)
+add_test(NAME frame_channel COMMAND test_frame_channel)
+
 # Loads the DLL straight from the build folder: no registration or administrator rights needed.
 add_test(NAME source_selftest COMMAND tumon_selftest $<TARGET_FILE:tumon_source>)

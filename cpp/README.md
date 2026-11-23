@@ -7,6 +7,7 @@ The Windows-side camera. **Status: Milestone 0 test camera**, not the final prod
 | `tumon_source.dll` | The camera: a Media Foundation media source that the Windows Frame Server loads. Offers one video stream with 12 test media types (YUY2, NV12, RGB32, I420 at 640x480, 320x240 and 1280x720, 30 fps) and draws a moving test picture on the CPU. |
 | `tumon_vcam_host.exe` | Registers the camera with `MFCreateVirtualCamera` and keeps it alive while it runs (a "session" camera). |
 | `tumon_vcam_ctl.exe` | `install` / `remove` / `status`: makes "Tumon Camera" a **permanent** camera (system lifetime, all users; administrator) and removes it again. `status` needs no administrator rights. |
+| `tumon_feeder.exe` | Reads a real camera (`--device "Surface Camera Front"`, `--list` shows the names), converts to YUY2 and feeds Tumon Camera through the shared-memory channel. Opens the real camera only while some program uses Tumon Camera. |
 | `tumon_selftest.exe` | Loads the DLL directly (no registration, no administrator rights) and verifies every media type through a Media Foundation source reader: frame count, byte size, moving picture, 30 fps pacing. |
 | `tumon_mfinfo.exe` | Lists every Media Foundation video device with its **native** media types; can read frames from one. This is how we learned what Iriun, the Surface camera and the SplitCam driver really offer. |
 | `test_frame_generator.exe` | Unit checks for the picture generator (sizes, no buffer overrun, colours, bad arguments). |
@@ -16,7 +17,8 @@ The Windows-side camera. **Status: Milestone 0 test camera**, not the final prod
 ```
 cpp/
 ├─ include/tumon/ids.h        CLSID and camera name
-├─ src/source/                the DLL
+├─ src/channel/               frame_channel.*: shared-memory protocol, source side and feeder side
+├─ src/source/                the DLL (also yuy2_scaler.*: fit a live picture into the requested size)
 │  ├─ dllmain.cpp             DllGetClassObject, DllRegisterServer (HKLM), class factory
 │  ├─ activator.*             the COM class MFCreateVirtualCamera instantiates; hands out the source
 │  ├─ media_source.*          IMFMediaSourceEx, stream selection, sensor profiles
@@ -60,4 +62,4 @@ this code was written against; no source was copied. See [THIRD_PARTY_NOTICES.md
 - CPU drawing only; a Direct3D manager offered by the client is ignored.
 - Camera-control properties (`IKsControl`) return "not found".
 - `tumon_vcam_host.exe` makes a *session* camera that disappears when it exits; `tumon_vcam_ctl.exe install` makes
-  a permanent one. The picture is still the test pattern: nothing feeds the camera real video yet.
+  a permanent one. Without a running `tumon_feeder.exe` the picture is the test pattern.

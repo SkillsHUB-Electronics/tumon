@@ -31,6 +31,10 @@ public:
     // Returns false (and writes nothing) if the arguments are invalid.
     bool Write(PixelFormat format, uint8_t* dst, int stride, int width, int height, uint64_t frame);
 
+    // Live pictures: draw into the BGRA canvas (width * height * 4 bytes, B G R X), then convert it.
+    uint8_t* Canvas(int width, int height);
+    bool WriteCanvas(PixelFormat format, uint8_t* dst, int stride, int width, int height);
+
 private:
     void Draw(int width, int height, uint64_t frame);
 

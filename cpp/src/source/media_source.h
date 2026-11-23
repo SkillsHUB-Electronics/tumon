@@ -11,9 +11,11 @@
 #include <wrl/client.h>
 
 #include <atomic>
+#include <memory>
 #include <mutex>
 #include <vector>
 
+#include "../channel/frame_channel.h"
 #include "attributes.h"
 #include "com_impl.h"
 
@@ -69,6 +71,7 @@ private:
     int StreamIndexById(DWORD id);
 
     std::mutex lock_;
+    std::shared_ptr<FrameChannelServer> channel_;
     std::vector<Microsoft::WRL::ComPtr<IMFMediaStream2>> streams_;
     Microsoft::WRL::ComPtr<IMFMediaEventQueue> queue_;
     Microsoft::WRL::ComPtr<IMFPresentationDescriptor> descriptor_;

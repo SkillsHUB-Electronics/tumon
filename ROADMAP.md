@@ -26,7 +26,8 @@ cameras but not pure DirectShow filters, and a listed camera must **start** with
 - [ ] Check that a second TeamTalk client receives and decodes the video.
 - [x] Decision: a *system* camera (`MFVirtualCameraLifetime_System` + `MFVirtualCameraAccess_AllUsers`) so it persists across restarts (TeamTalk saves the camera as its list index). Tool written: `tumon_vcam_ctl install|remove|status`; `install-test-camera.ps1 -Permanent` wires it up.
 - [x] Permanent camera installed on the test PC and verified from Windows with no host program running: listed at position 4, 60 of 60 frames at 30 fps (2026-11-23).
-- [x] **Permanent camera verified in TeamTalk after a Windows restart (user, 2026-11-23).**
+- [x] Permanent camera used in TeamTalk after a Windows restart (user report). Caveat: the list order changed across the restart (Tumon 4 to 0) and TeamTalk now saves `deviceid=0`; unclear whether it remapped by itself or was re-selected.
+- [ ] Ask/test: after a restart, is Tumon Camera already selected in TeamTalk without choosing it again?
 - [ ] (done, kept for the record) Try the permanent camera in TeamTalk: install with `-Permanent`, select it in TeamTalk, close all programs, restart Windows, check `tumon_vcam_ctl status` and that TeamTalk still finds it at the same position.
 
 - [ ] Build a minimal `IMFMediaSource` that outputs a test pattern (based on Microsoft's VCamSample pattern).
@@ -34,9 +35,14 @@ cameras but not pure DirectShow filters, and a listed camera must **start** with
 - [ ] Confirm it appears in TeamTalk's video device list and that the picture is sent to another client.
 - [ ] Record the result in the research note and ADR 0001 (confirm or reverse the decision).
 
-## Milestone 1: local cameras (planned)
+## Milestone 1: local cameras (in progress)
 
-- [ ] App feeds frames from a USB or laptop webcam to the virtual camera through shared memory.
+- [x] Shared-memory frame channel (`cpp/src/channel`) and a console feeder (`tumon_feeder`) that reads a laptop camera and publishes YUY2: tested in-process with the Surface camera (1280x720 at 30 pictures/s, camera opened only while Tumon Camera is in use). Unit-tested channel and scaler.
+- [x] Same in **TeamTalk**: updated DLL installed (administrator, `-Permanent`), `tumon_feeder --device "Surface Camera Front"` running, TeamTalk shows the live moving picture (user, 2026-11-23). Found and fixed on the way: two feeders at once fail (0xC00D3704); a second feeder is now refused.
+- [ ] Check smoothness and delay in TeamTalk over several minutes with one feeder; try 640x480 and 320x240 as TeamTalk sizes.
+- [ ] A second TeamTalk client sees the video.
+- [ ] Try a **USB webcam** (none is connected on the test PC; the Logitech C920 is unplugged).
+- [ ] Replace the console feeder with a proper app: camera choice, start with Windows, accessible interface.
 - [ ] Resolution and frame-rate selection; safe fallback picture when no source is active.
 - [ ] Installer (Inno Setup): registers and unregisters the camera cleanly; code-signed.
 - [ ] Keyboard-only and Narrator-tested interface, English and Bahasa Indonesia.

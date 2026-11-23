@@ -61,6 +61,19 @@ Check at any time (normal PowerShell): `& "$env:ProgramFiles\Tumon\tumon_vcam_ct
 powershell -ExecutionPolicy Bypass -File .\tools\test-camera\uninstall-test-camera.ps1
 ```
 
+## Show a real camera instead of the colour bars (feeder)
+
+After installing the **current** build (run `install-test-camera.ps1 -Permanent` again as administrator: it updates the
+DLL and restarts the Frame Server for a moment), start the feeder in a normal PowerShell window and leave it open:
+
+```powershell
+& "$env:USERPROFILE\build\tumon\Release\tumon_feeder.exe" --device "Surface Camera Front"
+```
+
+`--list` shows the camera names (for a USB webcam use its name, or `--index N`). Then select Tumon Camera in
+TeamTalk. The feeder opens the real camera only while Tumon Camera is in use and closes it afterwards. Without a
+feeder, Tumon Camera shows the colour bars. Ctrl+C stops the feeder.
+
 ## If something goes wrong
 
 - Uninstall says `Access to the path ... tumon_source.dll is denied`: the Windows Frame Server still has the DLL

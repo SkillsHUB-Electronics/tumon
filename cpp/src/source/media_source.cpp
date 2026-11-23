@@ -61,6 +61,11 @@ HRESULT MediaSource::Initialize(IMFAttributes* attributes) {
     hr = SetUnknown(MF_DEVICEMFT_SENSORPROFILE_COLLECTION, collection.Get());
     if (FAILED(hr)) return hr;
 
+    // The shared block through which the feeder program hands over pictures from a real camera. If it cannot be
+    // created the camera still works and simply shows the test pattern.
+    channel_ = std::make_shared<FrameChannelServer>();
+    if (!channel_->Create()) Trace(L"MediaSource: no frame channel (test pattern only)");
+
     // One video stream.
     auto* stream = new (std::nothrow) MediaStream();
     if (!stream) return E_OUTOFMEMORY;
@@ -68,6 +73,7 @@ HRESULT MediaSource::Initialize(IMFAttributes* attributes) {
     streamHolder.Attach(static_cast<IMFMediaStream2*>(stream));
     hr = stream->Initialize(static_cast<IMFMediaSourceEx*>(this), 0);
     if (FAILED(hr)) return hr;
+    stream->SetChannel(channel_);
     streams_.push_back(streamHolder);
 
     std::vector<ComPtr<IMFStreamDescriptor>> descriptors(streams_.size());
@@ -263,6 +269,7 @@ STDMETHODIMP MediaSource::Shutdown() {
         streams.swap(streams_);
     }
     for (auto& stream : streams) AsStream(stream.Get())->Shutdown();  // breaks the source <-> stream reference cycle
+    channel_.reset();
     ReleaseAttributes();
     return S_OK;
 }

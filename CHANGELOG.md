@@ -39,6 +39,23 @@ All notable changes to Tumon are listed here. The format follows
   for Iriun has 16 entries, so it uses the YUY2 types only. Tumon will offer native YUY2 and convert NV12 from real
   cameras. `docs/building.md` now describes the real toolchain and build.
 
+- **Milestone 1, first step: a real camera feeds Tumon Camera.**
+  - `cpp/src/channel/frame_channel.*`: a shared-memory frame channel (`Global\TumonCameraFrames-v1`, private name
+    override `TUMON_CHANNEL_NAME` for tests). Header plus three YUY2 slots (up to 1920x1080), sequence numbers
+    instead of locks (a torn read is detected and skipped), a producer time-out of one second, and a count of running
+    streams. The source creates it with an access list for the system, administrators, the service account and
+    interactively logged-on users only; every field the feeder writes is validated before it is read.
+  - The source now shows live pictures when a feeder is publishing (`yuy2_scaler`: fitted into the requested size
+    with black bars, converted to every offered format) and the test pattern otherwise.
+  - `tumon_feeder.exe --list | --device NAME | --index N`: reads a real camera through Media Foundation, converts
+    to YUY2 with the Video Processor MFT, publishes into the channel. It opens the real camera **only while some
+    program uses Tumon Camera** (the camera's light is off otherwise), reconnects, and refuses to read Tumon Camera itself.
+  - Tests: unit tests for the scaler and the channel (CTest now 4 of 4), and an in-process live test in
+    `tumon_selftest` with a fake feeder (picture content, letterboxing, stream count, fall back to the pattern after
+    the feeder stops). `tumon_selftest --live N` shows what the source delivers while a separate feeder runs.
+  - Run with the Surface camera (no administrator rights, private channel): 1280x720 at 30.0 pictures/s, the source
+    switched to live pictures, the real camera closed when the reader stopped (research observation 28).
+  - Needs the updated DLL installed by an administrator to appear in TeamTalk; not yet tried there.
 - `cpp/tools/vcam_ctl.cpp` (`tumon_vcam_ctl.exe install | remove | status`): registers "Tumon Camera" as a permanent
   camera with `MFVirtualCameraLifetime_System` and `MFVirtualCameraAccess_AllUsers` (administrator), per Microsoft's
   documented behaviour that the same parameters reopen the same camera and `Remove` deletes it. `install-test-camera.ps1`
@@ -46,10 +63,18 @@ All notable changes to Tumon are listed here. The format follows
   non-administrator refusal checked; the permanent install itself not yet run (needs the user's administrator shell).
 
 ### Verified
-- **Permanent system camera works in TeamTalk 5.23 after a Windows restart** (user-confirmed): selected camera still
-  valid, video shown, no host program running. Research observation 26; ADR 0001 note added.
+- **The live laptop camera appears in TeamTalk through Tumon Camera** (user-reported, with the permanent camera updated
+  to the new DLL and `tumon_feeder` running): the Surface camera's picture shows and moves (research observation 29).
+- **Permanent system camera works in TeamTalk 5.23 after a Windows restart** (user-reported): the camera's video was
+  shown, no host program running. **Correction found later:** Windows' camera list order changed across the restart
+  (Tumon from position 4 to 0) and TeamTalk now saves `deviceid=0`, so saved positions are fragile and it is not
+  established that TeamTalk remapped by itself (research observations 26 and 27).
 
 ### Fixed
+- `tumon_feeder.exe` now allows **only one running instance per channel** (a named mutex; the second one prints a
+  message and exits with code 65). Two feeders at once fought over the real camera (every open failed with
+  `0xC00D3704`) and wrote into the same slots. Found when the user had started two by accident. Verified: a second
+  feeder is refused while the first keeps sending about 30 pictures per second.
 - `install-test-camera.ps1` could not be run twice: copying over the installed DLL failed ("being used by another
   process") because the Frame Server holds it while the camera exists. It now skips the copy when the DLL is
   identical (hash check) and otherwise stops the Frame Server briefly, copies, and starts it again.

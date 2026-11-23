@@ -11,8 +11,11 @@
 #include <wrl/client.h>
 
 #include <atomic>
+#include <memory>
 #include <mutex>
+#include <vector>
 
+#include "../channel/frame_channel.h"
 #include "attributes.h"
 #include "com_impl.h"
 #include "frame_generator.h"
@@ -26,6 +29,7 @@ public:
 
     HRESULT Initialize(IMFMediaSource* source, DWORD index);
     HRESULT SetAllocator(IUnknown* allocator);
+    void SetChannel(std::shared_ptr<FrameChannelServer> channel);
     MFSampleAllocatorUsage GetAllocatorUsage() const { return MFSampleAllocatorUsage_UsesProvidedAllocator; }
     HRESULT Start(IMFMediaType* type);
     HRESULT Stop();
@@ -56,6 +60,9 @@ public:
 
 private:
     HRESULT FillSample(IMFSample* sample);
+    // Draws the newest picture from the feeder if there is one, otherwise the test pattern.
+    bool Render(uint8_t* dst, int stride, int width, int height);
+    void CountConsumer(bool running);
 
     std::mutex lock_;
     MF_STREAM_STATE state_ = MF_STREAM_STATE_STOPPED;
@@ -71,6 +78,17 @@ private:
     Microsoft::WRL::ComPtr<IMFMediaSource> source_;
     Microsoft::WRL::ComPtr<IMFVideoSampleAllocatorEx> allocator_;
     bool allocatorReady_ = false;
+
+    // Live pictures from the feeder (see channel/frame_channel.h).
+    std::shared_ptr<FrameChannelServer> channel_;
+    bool consumerCounted_ = false;
+    bool haveLive_ = false;
+    bool lastWasLive_ = false;
+    uint64_t lastLiveFrame_ = 0;
+    uint64_t liveFrames_ = 0;
+    uint64_t patternFrames_ = 0;
+    std::vector<uint8_t> live_;
+    FrameInfo liveInfo_;
 
     TUMON_COM_REFCOUNT()
 };

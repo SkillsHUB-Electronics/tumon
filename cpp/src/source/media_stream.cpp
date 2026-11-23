@@ -11,6 +11,7 @@
 
 #include "formats.h"
 #include "trace.h"
+#include "yuy2_scaler.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -108,6 +109,48 @@ HRESULT MediaStream::SetAllocator(IUnknown* allocator) {
     return allocator->QueryInterface(IID_PPV_ARGS(&allocator_));
 }
 
+void MediaStream::SetChannel(std::shared_ptr<FrameChannelServer> channel) {
+    std::lock_guard<std::mutex> guard(lock_);
+    channel_ = std::move(channel);
+}
+
+// Tells the feeder, through the shared header, how many streams are running, so it only opens the real camera
+// while somebody is actually using Tumon Camera. Call with the lock held.
+void MediaStream::CountConsumer(bool running) {
+    if (!channel_) return;
+    if (running && !consumerCounted_) {
+        channel_->AddConsumer();
+        consumerCounted_ = true;
+    } else if (!running && consumerCounted_) {
+        channel_->RemoveConsumer();
+        consumerCounted_ = false;
+    }
+}
+
+bool MediaStream::Render(uint8_t* dst, int stride, int width, int height) {
+    bool live = false;
+    if (channel_ && channel_->IsOpen()) {
+        if (channel_->ReadLatest(&lastLiveFrame_, &live_, &liveInfo_)) haveLive_ = true;
+        live = haveLive_ && channel_->ProducerAlive();
+        if (!live) haveLive_ = false;  // the feeder stopped: forget its last picture
+    }
+
+    if (live) {
+        uint8_t* canvas = generator_.Canvas(width, height);
+        if (FitYuy2ToBgra(live_.data(), static_cast<int>(liveInfo_.width), static_cast<int>(liveInfo_.height),
+                          static_cast<int>(liveInfo_.stride), canvas, width, height)) {
+            if (!lastWasLive_) Trace(L"MediaStream: showing live pictures (%ux%u)", liveInfo_.width, liveInfo_.height);
+            lastWasLive_ = true;
+            ++liveFrames_;
+            return generator_.WriteCanvas(format_, dst, stride, width, height);
+        }
+    }
+    if (lastWasLive_) Trace(L"MediaStream: feeder stopped, back to the test pattern");
+    lastWasLive_ = false;
+    ++patternFrames_;
+    return generator_.Write(format_, dst, stride, width, height, frame_);
+}
+
 HRESULT MediaStream::Start(IMFMediaType* type) {
     std::lock_guard<std::mutex> guard(lock_);
     if (!queue_ || !descriptor_) return MF_E_SHUTDOWN;
@@ -152,6 +195,11 @@ HRESULT MediaStream::Start(IMFMediaType* type) {
     hr = queue_->QueueEventParamVar(MEStreamStarted, GUID_NULL, S_OK, nullptr);
     if (FAILED(hr)) return hr;
     state_ = MF_STREAM_STATE_RUNNING;
+    liveFrames_ = 0;
+    patternFrames_ = 0;
+    lastLiveFrame_ = 0;
+    haveLive_ = false;
+    CountConsumer(true);
     Trace(L"MediaStream::Start ok: format %d %ux%u @%u fps, allocator %s", static_cast<int>(format_), width_, height_, fps_,
           allocator_ ? L"provided" : L"none");
     return S_OK;
@@ -165,11 +213,15 @@ HRESULT MediaStream::Stop() {
     allocatorReady_ = false;
     const HRESULT hr = queue_->QueueEventParamVar(MEStreamStopped, GUID_NULL, S_OK, nullptr);
     state_ = MF_STREAM_STATE_STOPPED;
+    CountConsumer(false);
+    Trace(L"MediaStream::Stop: %llu live pictures, %llu test-pattern pictures", liveFrames_, patternFrames_);
     return hr;
 }
 
 void MediaStream::Shutdown() {
     std::lock_guard<std::mutex> guard(lock_);
+    CountConsumer(false);
+    channel_.reset();
     if (queue_) {
         queue_->Shutdown();
         queue_.Reset();
@@ -200,7 +252,7 @@ HRESULT MediaStream::FillSample(IMFSample* sample) {
         buffer->GetMaxLength(&maxLength);
         const size_t needed = pitch > 0 ? FrameBytes(format_, pitch, h) : 0;
         const bool ok = pitch > 0 && maxLength >= needed &&
-                        generator_.Write(format_, scanline0, pitch, w, h, frame_);
+                        Render(scanline0, pitch, w, h);
         buffer2d->Unlock2D();
         if (!ok) return E_FAIL;
         buffer->SetCurrentLength(static_cast<DWORD>(needed));
@@ -213,7 +265,7 @@ HRESULT MediaStream::FillSample(IMFSample* sample) {
     if (FAILED(hr)) return hr;
     const int stride = DefaultStride(format_, w);
     const size_t needed = FrameBytes(format_, stride, h);
-    const bool ok = maxLength >= needed && generator_.Write(format_, data, stride, w, h, frame_);
+    const bool ok = maxLength >= needed && Render(data, stride, w, h);
     buffer->Unlock();
     if (!ok) return E_FAIL;
     return buffer->SetCurrentLength(static_cast<DWORD>(needed));

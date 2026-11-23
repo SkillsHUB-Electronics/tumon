@@ -4,7 +4,8 @@
 - Date: 2026-11-23
 
 > **Update 5 (2026-11-23):** the camera was also installed as a **system-lifetime** camera for all users and TeamTalk
-> still used it after a Windows restart. The "camera that survives restarts" follow-up below is done.
+> showed it after a Windows restart. Caveat: the camera list order changed across the restart (position 4 to 0), so
+> TeamTalk's position-based saved choice is fragile; see research observation 27.
 >
 > **Update 4 (2026-11-23, Milestone 0 passed; this ADR is now Accepted):** TeamTalk 5.23 lists the Tumon test camera,
 > fills *Video Resolution* automatically (640x480, 320x240, 1280x720 at FPS 30), picks YUY2 and shows the picture.
