@@ -66,7 +66,9 @@ All notable changes to Tumon are listed here. The format follows
 - `.github/workflows/ci.yml` now has a **Windows job**: configure and build all native targets (camera DLL, app, tools,
   tests) and run the three unit tests. The media-source self-test runs too but is informational for now, because server
   images may lack parts of Media Foundation. CI does not cover camera registration, the app window, real cameras or
-  TeamTalk. The same steps pass in a fresh build folder locally; the run on GitHub is still to be seen.
+  TeamTalk. The first run on GitHub (commit `f360a8a`) succeeded in both jobs, with no error annotation from the
+  self-test step. The self-test is therefore **required** now (all four CTest tests in one step), and the workflow
+  uses `actions/checkout@v5` (Node 24), which removes the Node 20 deprecation warning.
 
 ### Added (the app)
 - **`Tumon.exe`, the first app** (native Win32, version 0.1.0, [ADR 0002](docs/decisions/0002-native-win32-app.md)):
