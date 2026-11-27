@@ -1,0 +1,57 @@
+#include <windows.h>
+#include "resource.h"
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+// Standard controls only: screen readers (Narrator, NVDA, JAWS) understand them. Each input follows its label so
+// the label becomes its accessible name, and the order below is the Tab order. All texts are set at run time.
+IDD_MAIN DIALOGEX 0, 0, 300, 236
+STYLE DS_SETFONT | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "Tumon"
+FONT 9, "Segoe UI"
+BEGIN
+    LTEXT           "", IDC_CAMERA_LABEL, 7, 8, 286, 9
+    COMBOBOX        IDC_CAMERA, 7, 19, 220, 120, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "", IDC_REFRESH, 232, 18, 61, 15
+    DEFPUSHBUTTON   "", IDC_STARTSTOP, 7, 40, 100, 18
+    LTEXT           "", IDC_STATUS_LABEL, 7, 65, 286, 9
+    EDITTEXT        IDC_STATUS, 7, 76, 286, 34, ES_MULTILINE | ES_READONLY | ES_AUTOVSCROLL | WS_VSCROLL | WS_TABSTOP
+    AUTOCHECKBOX    "", IDC_AUTOSTART, 7, 116, 286, 11, WS_TABSTOP
+    AUTOCHECKBOX    "", IDC_RUNATLOGIN, 7, 130, 286, 11, WS_TABSTOP
+    LTEXT           "", IDC_HELP_LABEL, 7, 148, 286, 9
+    EDITTEXT        IDC_HELPTEXT, 7, 159, 286, 44, ES_MULTILINE | ES_READONLY | ES_AUTOVSCROLL | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "", IDC_LANG_LABEL, 7, 215, 50, 9
+    COMBOBOX        IDC_LANG, 60, 213, 90, 60, CBS_DROPDOWNLIST | WS_TABSTOP
+    PUSHBUTTON      "", IDC_EXIT, 232, 213, 61, 15
+END
+
+1 RT_MANIFEST "app.manifest"
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION TUMON_VERSION_RC
+PRODUCTVERSION TUMON_VERSION_RC
+FILEFLAGSMASK 0x3fL
+FILEFLAGS 0x0L
+FILEOS 0x40004L
+FILETYPE 0x1L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "SkillsHUB Electronics"
+            VALUE "FileDescription", "Tumon virtual camera for TeamTalk"
+            VALUE "FileVersion", TUMON_VERSION_STRING
+            VALUE "InternalName", "tumon"
+            VALUE "LegalCopyright", "MIT License. Copyright (c) 2026 SkillsHUB Electronics"
+            VALUE "OriginalFilename", "Tumon.exe"
+            VALUE "ProductName", "Tumon"
+            VALUE "ProductVersion", TUMON_VERSION_STRING
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END

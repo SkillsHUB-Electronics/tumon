@@ -74,6 +74,23 @@ DLL and restarts the Frame Server for a moment), start the feeder in a normal Po
 TeamTalk. The feeder opens the real camera only while Tumon Camera is in use and closes it afterwards. Without a
 feeder, Tumon Camera shows the colour bars. Ctrl+C stops the feeder.
 
+## Test with a second TeamTalk client (does someone else see the video?)
+
+This is the test that matters in real use. You need a TeamTalk server both clients can join, and a second client on
+another device (another PC, or the TeamTalk app on a phone). Do not point other people's cameras or faces at a
+public server without their consent.
+
+1. Client A (this PC): feeder running (one only), TeamTalk connected, in a channel, Tumon Camera selected,
+   video transmission **on** (the camera button in the toolbar, or *Me › Enable Video Transmission*).
+2. Client B (other device): join the same channel and open the **Video** tab.
+3. Record, for each size you try (640x480, 320x240, 1280x720):
+   - B sees A's video at all? (and A's own preview shows it)
+   - colours right (no green or pink cast), picture upright, shape right
+   - smooth or choppy, and roughly how many seconds of delay
+   - feeder window: pictures per second and "1 program(s) using Tumon Camera"
+4. Compare once with a camera TeamTalk lists natively (for example Iriun) if you have one, to see whether Tumon looks
+   different to the receiver. TeamTalk encodes with the codec and bitrate set in *Video Capture* (default VP8, 256 kbps).
+
 ## If something goes wrong
 
 - Uninstall says `Access to the path ... tumon_source.dll is denied`: the Windows Frame Server still has the DLL

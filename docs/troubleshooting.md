@@ -23,6 +23,15 @@
 - Lower the resolution or frame rate in Tumon. TeamTalk sends small video anyway.
 - For a phone source, prefer USB or a 5 GHz Wi-Fi network.
 
+## Colours look wrong on someone's phone (orange looks purple, red and blue swapped)
+
+Seen with the TeamTalk phone app, while the same video was correct on a laptop receiver. Test: stop the feeder so
+Tumon Camera shows its colour bars (white, yellow, cyan, green, magenta, red, blue from the left) and look at the
+receiver. If a laptop shows them right and the phone shows white, cyan, yellow, green, magenta, blue, red, the
+phone app is swapping red and blue when it draws the picture; Tumon's output is correct (it is unit-tested). Check
+whether the same phone shows other cameras the same way, and report it to the TeamTalk developers with the app
+version. Do not try to fix it in Tumon: swapping the colours there would break every correct receiver.
+
 ## Uninstall
 
 Use *Apps › Installed apps › Tumon › Uninstall*. This removes the virtual camera. If a camera named

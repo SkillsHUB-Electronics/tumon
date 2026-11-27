@@ -83,6 +83,8 @@ public:
     // Copies the newest complete picture if its number is greater than *lastFrame.
     bool ReadLatest(uint64_t* lastFrame, std::vector<uint8_t>* data, FrameInfo* info);
     bool ProducerAlive() const;
+    // Number of the newest picture the feeder has published (0 before the first).
+    uint64_t LatestFrame() const;
 
 private:
     HANDLE mapping_ = nullptr;

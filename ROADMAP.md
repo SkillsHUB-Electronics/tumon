@@ -39,10 +39,28 @@ cameras but not pure DirectShow filters, and a listed camera must **start** with
 
 - [x] Shared-memory frame channel (`cpp/src/channel`) and a console feeder (`tumon_feeder`) that reads a laptop camera and publishes YUY2: tested in-process with the Surface camera (1280x720 at 30 pictures/s, camera opened only while Tumon Camera is in use). Unit-tested channel and scaler.
 - [x] Same in **TeamTalk**: updated DLL installed (administrator, `-Permanent`), `tumon_feeder --device "Surface Camera Front"` running, TeamTalk shows the live moving picture (user, 2026-11-23). Found and fixed on the way: two feeders at once fail (0xC00D3704); a second feeder is now refused.
-- [ ] Check smoothness and delay in TeamTalk over several minutes with one feeder; try 640x480 and 320x240 as TeamTalk sizes.
-- [ ] A second TeamTalk client sees the video.
+- [x] **Phone colours, resolved: the phone app swaps red and blue; the laptop receiver is correct (observation 32), so it is not a Tumon fault and Tumon must not "compensate" (that would break every correct receiver).** Optional: confirm with another camera on the same phone, and report it to the TeamTalk developers. Original note: orange looks purple on the TeamTalk phone app (observation 31). Decide with the colour-bar test (stop the feeder; bars are white, yellow, cyan, green, magenta, red, blue from the left) and by comparing the phone's view of another camera (Iriun, or the Surface camera chosen directly). If only Tumon is affected, check the YUV matrix (BT.601 vs BT.709) and range.
+- [x] Pacing: with a feeder running the source now follows the camera's rhythm instead of its own clock (0 repeated pictures, 0 time-outs in the in-process test). Needs the DLL re-installed (administrator) to take effect in TeamTalk.
+- [ ] **Phone lag** (observation 33): re-test in TeamTalk with the new DLL, at 640x480 and 320x240 (TeamTalk encodes VP8 at 256 kbps by default, which is little for 1280x720), and compare Iriun on the same phone.
+- [ ] Check smoothness and delay in TeamTalk over several minutes with one feeder.
+- [x] A second TeamTalk client (another PC) sees the video (user report). Still to record: sizes tried, colours, smoothness and delay on the receiver.
 - [ ] Try a **USB webcam** (none is connected on the test PC; the Logitech C920 is unplugged).
-- [ ] Replace the console feeder with a proper app: camera choice, start with Windows, accessible interface.
+- [x] A proper app, `Tumon.exe`: camera choice, Start/Stop, tray, start with Windows, English and Bahasa Indonesia, standard controls (MSAA roles and names checked).
+- [ ] Try the app with a screen reader (Narrator, NVDA) and a blind TeamTalk user.
+
+### Launch of 0.1.0
+
+- [x] Installer compiled (Inno Setup 6.7.3).
+- [x] First install verified on this PC (2026-11-27).
+- [x] Upgrade over an installed copy works (2026-11-27); video shows in TeamTalk with the installed app.
+- [ ] Check that Tumon opened by the new installer runs as the normal user (not administrator).
+- [ ] Test uninstall on this PC.
+- [ ] Test the installer on a second Windows 11 PC that has never had Tumon.
+- [ ] Decide about code signing (without it Windows SmartScreen warns).
+- [ ] Restrict who may write to the frame channel, or state the limitation in the release notes (SECURITY.md).
+- [ ] App icon.
+- [ ] GitHub release `v0.1.0` (published by the maintainer).
+- [ ] Known and accepted for now: the TeamTalk phone app shows red and blue swapped; some lag on phones.
 - [ ] Resolution and frame-rate selection; safe fallback picture when no source is active.
 - [ ] Installer (Inno Setup): registers and unregisters the camera cleanly; code-signed.
 - [ ] Keyboard-only and Narrator-tested interface, English and Bahasa Indonesia.

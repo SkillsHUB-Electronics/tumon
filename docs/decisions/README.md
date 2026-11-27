@@ -5,7 +5,8 @@ never deleted; a changed decision gets a new record that supersedes the old one.
 
 | # | Title | Status |
 |---|---|---|
-| [0001](0001-media-foundation-virtual-camera.md) | Use a Media Foundation virtual camera, not a DirectShow filter | Proposed (awaiting Milestone 0 test) |
+| [0001](0001-media-foundation-virtual-camera.md) | Use a Media Foundation virtual camera, not a DirectShow filter | Accepted |
+| [0002](0002-native-win32-app.md) | Build the app as a native Windows program in C++ | Accepted |
 
 ## Template
 

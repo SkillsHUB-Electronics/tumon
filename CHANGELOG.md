@@ -62,7 +62,55 @@ All notable changes to Tumon are listed here. The format follows
   gains `-Permanent`; `uninstall-test-camera.ps1` removes a permanent camera first. Built; `status` and the
   non-administrator refusal checked; the permanent install itself not yet run (needs the user's administrator shell).
 
+### Added (the app)
+- **`Tumon.exe`, the first app** (native Win32, version 0.1.0, [ADR 0002](docs/decisions/0002-native-win32-app.md)):
+  choose a camera, Start or Stop, status text announced to screen readers, "start sending when Tumon opens", "open
+  Tumon when I sign in to Windows", a TeamTalk setup box, English and Bahasa Indonesia (or follow Windows),
+  notification-area icon, one instance only, `--tray` to start hidden. Settings are stored per user.
+- `cpp/src/feeder/camera_feeder.*`: the feeder engine, now shared by the app and `tumon_feeder.exe` (which became a
+  thin console wrapper; `--list` no longer lists Tumon Camera itself).
+- `packaging/windows/installer.iss`: Inno Setup script (Program Files, camera registration, permanent camera, Start
+  menu, clean uninstall). Compiled with Inno Setup 6.7.3 into `Tumon-Setup-0.1.0.exe` (about 2.1 MB,
+  not code-signed; one understood warning about HKCU under an elevated install). **Not yet run.**
+- Checked: MSAA reports every control with the right role and name (combo boxes, buttons, check boxes, edit fields);
+  with the installed camera, Start gave "Ready", another program reading Tumon Camera gave "Sending Surface Camera
+  Front at 1280x720, about 32 pictures per second", leaving gave "Ready" again, then Stop and Exit worked. A second
+  start only raises the first window. CTest 4 of 4. Not yet tried by a screen-reader user.
+
+### Verified (installer)
+- First run of `Tumon-Setup-0.1.0.exe` on the build PC: `Tumon.exe`, the camera DLL and `tumon_vcam_ctl.exe` identical to
+  the build, DLL registered from `C:\Program Files\Tumon`, Tumon Camera present, uninstall entry "Tumon version 0.1.0",
+  Start menu shortcut.
+- **Video shows in TeamTalk** with the installed version (user-reported).
+- **Upgrade over the installed copy:** the newer setup was run (uninstall record updated after it was built); still one
+  uninstall entry, installed files identical to the build, Tumon Camera present. Uninstall not yet tested.
+
+### Fixed (installer)
+- The app opened **as administrator** after installing (Setup had been started from an administrator shell). The "Open
+  Tumon" step now starts it through Explorer, so it runs as the normal user.
+
+### Changed (pacing)
+- **Live pictures are no longer sampled on the source's own clock.** With a feeder publishing, each frame request now
+  waits for the next new picture (never faster than a quarter above the stream's rate, at most 100 ms) and stamps it with
+  its arrival time, so pictures are neither repeated nor dropped for lack of alignment. In-process measurement with the
+  Surface camera: 240 requests, 0 repeated pictures, 0 time-outs, average wait 32 ms, fill 2 ms, 29 to 30 different
+  pictures per second (before: roughly a third repeated, approximate count). Triggered by a user report of some lag on
+  a phone client (observation 33); the phone's lag may also come from size, bitrate or the phone itself.
+- Pacing sleeps use a high-resolution waitable timer (about 1.5 ms accuracy here) instead of `Sleep`, which rounded to
+  about 11 ms.
+- The stream writes diagnostic counters (requests, average wait and fill time, repeated pictures, time-outs) to the
+  trace file when `TUMON_TRACE_FILE` is set; nothing is written otherwise. `tumon_selftest --live` stops the stream so
+  they appear.
+- Needs the DLL re-installed by an administrator to take effect in TeamTalk.
+
+### Tests
+- `test_frame_generator` now checks the **colour encoding** itself: pure red and pure blue as exact YUY2 values
+  (Y/U/V), the U-then-V order in NV12 and the B-G-R order in RGB32, so a swapped U/V or red/blue channel would be caught.
+  Added after a phone client showed orange as purple (research observation 31; cause not yet known).
+
 ### Verified
+- **A second TeamTalk client on another PC sees the video** from Tumon Camera (user-reported; research observation 30).
+  Sizes, colours, smoothness and delay on the receiver are not yet recorded.
 - **The live laptop camera appears in TeamTalk through Tumon Camera** (user-reported, with the permanent camera updated
   to the new DLL and `tumon_feeder` running): the Surface camera's picture shows and moves (research observation 29).
 - **Permanent system camera works in TeamTalk 5.23 after a Windows restart** (user-reported): the camera's video was

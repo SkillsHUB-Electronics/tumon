@@ -11,7 +11,8 @@ sends data anywhere.*
 - **The real camera is on only while it is needed.** The feeder opens your webcam or laptop camera only while some
   program is actually using Tumon Camera, and closes it again afterwards, so the camera's light is off otherwise.
 - **No accounts, no analytics, no advertising identifiers.**
-- **Settings** (chosen camera, resolution, effects, language) are stored locally for your Windows user.
+- **Settings** (chosen camera, whether to start sending when Tumon opens, language) are stored locally for your Windows
+  user in the registry. "Open Tumon when I sign in" adds one entry to your user's Run key; unticking it removes it.
 - **Other apps** that receive the picture (TeamTalk, Teams, Zoom and so on) have their own privacy
   policies, which Tumon does not control.
 

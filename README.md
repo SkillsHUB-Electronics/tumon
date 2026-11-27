@@ -16,6 +16,13 @@
 > repository holds the research, that test camera (`cpp/`), the design and the project documentation. See the
 > [roadmap](ROADMAP.md) and the [changelog](CHANGELOG.md).
 
+## The app (built, not released yet)
+
+`Tumon.exe` lets you pick a camera (laptop or USB webcam) and press **Start**; TeamTalk then sees it as "Tumon Camera"
+with its resolution list filled in. The real camera turns on only while some program is using Tumon Camera. It has a
+notification-area icon, can start with Windows, speaks English and Bahasa Indonesia, and uses standard Windows controls
+for screen readers. An installer script exists; there is no downloadable release yet.
+
 ## Why Tumon
 
 TeamTalk is popular with blind and low-vision users, and it is picky about cameras. Virtual cameras that

@@ -243,6 +243,7 @@ int RunLive(HMODULE dll, int seconds) {
         wprintf(L"  second %2d: %2d pictures in %4llu ms, %2zu distinct, brightness mean %5.1f sd %5.1f, feeder pictures so far %llu, streams %ld\n",
                 s + 1, got, GetTickCount64() - t0, distinct.size(), mean, sd, observer.FrameCount(), observer.Consumers());
     }
+    source->Stop();  // writes the stream's counters to the trace file, if TUMON_TRACE_FILE is set
     source->Shutdown();
     activate->ShutdownObject();
     return 0;

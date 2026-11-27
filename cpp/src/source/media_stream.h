@@ -63,6 +63,8 @@ private:
     // Draws the newest picture from the feeder if there is one, otherwise the test pattern.
     bool Render(uint8_t* dst, int stride, int width, int height);
     void CountConsumer(bool running);
+    // Sleeps for `hundredNs` (100 ns units) with about 1 ms accuracy, without changing the system timer.
+    void SleepPrecisely(MFTIME hundredNs);
 
     std::mutex lock_;
     MF_STREAM_STATE state_ = MF_STREAM_STATE_STOPPED;
@@ -73,6 +75,8 @@ private:
     UINT32 fps_ = 30;
     uint64_t frame_ = 0;
     MFTIME startTime_ = 0;
+    MFTIME lastEmit_ = 0;
+    HANDLE timer_ = nullptr;  // high-resolution waitable timer for pacing
     Microsoft::WRL::ComPtr<IMFStreamDescriptor> descriptor_;
     Microsoft::WRL::ComPtr<IMFMediaEventQueue> queue_;
     Microsoft::WRL::ComPtr<IMFMediaSource> source_;
@@ -87,6 +91,12 @@ private:
     uint64_t lastLiveFrame_ = 0;
     uint64_t liveFrames_ = 0;
     uint64_t patternFrames_ = 0;
+    // Diagnostics, written to the trace file when a stream stops.
+    uint64_t requests_ = 0;
+    uint64_t reusedLive_ = 0;     // live pictures drawn again because no newer one had arrived
+    uint64_t waitTimeouts_ = 0;   // requests that gave up waiting for a new picture
+    double waitMsTotal_ = 0;
+    double fillMsTotal_ = 0;
     std::vector<uint8_t> live_;
     FrameInfo liveInfo_;
 

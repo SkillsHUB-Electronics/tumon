@@ -63,7 +63,29 @@ MediaStream::MediaStream() {
     InitAttributes();
 }
 
-MediaStream::~MediaStream() { --g_objectCount; }
+MediaStream::~MediaStream() {
+    if (timer_) CloseHandle(timer_);
+    --g_objectCount;
+}
+
+void MediaStream::SleepPrecisely(MFTIME hundredNs) {
+    if (hundredNs <= 0) return;
+    if (!timer_) {
+#ifndef CREATE_WAITABLE_TIMER_HIGH_RESOLUTION
+#define CREATE_WAITABLE_TIMER_HIGH_RESOLUTION 0x00000002
+#endif
+        timer_ = CreateWaitableTimerExW(nullptr, nullptr, CREATE_WAITABLE_TIMER_HIGH_RESOLUTION, TIMER_ALL_ACCESS);
+    }
+    if (timer_) {
+        LARGE_INTEGER due;
+        due.QuadPart = -hundredNs;  // relative time
+        if (SetWaitableTimer(timer_, &due, 0, nullptr, nullptr, FALSE)) {
+            WaitForSingleObject(timer_, INFINITE);
+            return;
+        }
+    }
+    Sleep(static_cast<DWORD>(hundredNs / 10000));
+}
 
 HRESULT MediaStream::Initialize(IMFMediaSource* source, DWORD index) {
     if (!source) return E_POINTER;
@@ -130,9 +152,11 @@ void MediaStream::CountConsumer(bool running) {
 bool MediaStream::Render(uint8_t* dst, int stride, int width, int height) {
     bool live = false;
     if (channel_ && channel_->IsOpen()) {
-        if (channel_->ReadLatest(&lastLiveFrame_, &live_, &liveInfo_)) haveLive_ = true;
+        const bool gotNew = channel_->ReadLatest(&lastLiveFrame_, &live_, &liveInfo_);
+        if (gotNew) haveLive_ = true;
         live = haveLive_ && channel_->ProducerAlive();
         if (!live) haveLive_ = false;  // the feeder stopped: forget its last picture
+        if (live && !gotNew) ++reusedLive_;
     }
 
     if (live) {
@@ -215,6 +239,10 @@ HRESULT MediaStream::Stop() {
     state_ = MF_STREAM_STATE_STOPPED;
     CountConsumer(false);
     Trace(L"MediaStream::Stop: %llu live pictures, %llu test-pattern pictures", liveFrames_, patternFrames_);
+    if (requests_ > 0) {
+        Trace(L"MediaStream::Stop: %llu requests, average wait %.1f ms, average fill %.1f ms, %llu live pictures repeated, %llu waits timed out",
+              requests_, waitMsTotal_ / static_cast<double>(requests_), fillMsTotal_ / static_cast<double>(requests_), reusedLive_, waitTimeouts_);
+    }
     return hr;
 }
 
@@ -347,17 +375,38 @@ STDMETHODIMP MediaStream::RequestSample(IUnknown* token) {
         return MF_E_INVALIDREQUEST;
     }
 
-    // Pace the stream to its frame rate. A real camera is driven by its sensor; this test camera simply
-    // waits (at most 100 ms) inside the request. Replace with a timer-driven queue before shipping.
+    // Pacing. A real camera is driven by its sensor; here the request itself waits (at most 100 ms). Replace with a
+    // timer-driven queue before shipping.
+    LARGE_INTEGER frequency, t0, t1, t2;
+    QueryPerformanceFrequency(&frequency);
+    QueryPerformanceCounter(&t0);
+    const auto ms = [&](LARGE_INTEGER a, LARGE_INTEGER b) { return (b.QuadPart - a.QuadPart) * 1000.0 / static_cast<double>(frequency.QuadPart); };
+
     const MFTIME duration = 10000000 / static_cast<MFTIME>(fps_);
-    const MFTIME now = MFGetSystemTime();
-    MFTIME due = startTime_ + static_cast<MFTIME>(frame_) * duration;
-    if (now - due > 5 * duration) {
-        startTime_ = now - static_cast<MFTIME>(frame_) * duration;  // fell behind: restart the schedule
-        due = now;
-    } else if (due > now) {
-        Sleep(static_cast<DWORD>(std::min<MFTIME>((due - now) / 10000, 100)));
+    MFTIME due;
+    if (channel_ && channel_->IsOpen() && channel_->ProducerAlive()) {
+        // A feeder is publishing: follow the camera's own rhythm. Answer each request with the *next new* picture
+        // instead of sampling on our own clock, which was out of step with the camera and repeated about a third of
+        // the pictures (20 different pictures in 30). Never faster than a quarter above the stream's frame rate.
+        const MFTIME earliest = lastEmit_ + duration * 3 / 4;
+        MFTIME now = MFGetSystemTime();
+        if (now < earliest) SleepPrecisely(earliest - now);
+        const ULONGLONG deadline = GetTickCount64() + 100;
+        while (channel_->LatestFrame() <= lastLiveFrame_ && GetTickCount64() < deadline) SleepPrecisely(10000);  // 1 ms
+        if (channel_->LatestFrame() <= lastLiveFrame_) ++waitTimeouts_;
+        due = MFGetSystemTime();
+    } else {
+        const MFTIME now = MFGetSystemTime();
+        due = startTime_ + static_cast<MFTIME>(frame_) * duration;
+        if (now - due > 5 * duration) {
+            startTime_ = now - static_cast<MFTIME>(frame_) * duration;  // fell behind: restart the schedule
+            due = now;
+        } else if (due > now) {
+            SleepPrecisely(std::min<MFTIME>(due - now, 1000000));
+        }
     }
+    lastEmit_ = due;
+    QueryPerformanceCounter(&t1);
 
     ComPtr<IMFSample> sample;
     HRESULT hr;
@@ -376,6 +425,10 @@ STDMETHODIMP MediaStream::RequestSample(IUnknown* token) {
 
     hr = FillSample(sample.Get());
     if (FAILED(hr)) return hr;
+    QueryPerformanceCounter(&t2);
+    ++requests_;
+    waitMsTotal_ += ms(t0, t1);
+    fillMsTotal_ += ms(t1, t2);
     sample->SetSampleTime(due);
     sample->SetSampleDuration(duration);
     if (token) sample->SetUnknown(MFSampleExtension_Token, token);

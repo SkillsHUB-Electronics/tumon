@@ -88,6 +88,42 @@ void TestPicture() {
     }
 }
 
+// Colour correctness of the encoding itself (BT.601, limited range): pure red is Y=82 U=90 V=240, pure blue is
+// Y=41 U=240 V=110. A swapped U and V, or swapped red and blue, would show here. The colour bars (frame 1, 640 wide)
+// have white, yellow, cyan, green, magenta, red, blue from the left; x = 500 is inside red and x = 600 inside blue.
+void TestColourEncoding() {
+    const int w = 640, h = 480, y = 10;
+    const int redX = 500, blueX = 600;
+    {
+        FrameGenerator gen;
+        std::vector<uint8_t> buf(FrameBytes(PixelFormat::YUY2, w * 2, h));
+        gen.Write(PixelFormat::YUY2, buf.data(), w * 2, w, h, 1);
+        const uint8_t* r = &buf[static_cast<size_t>(y) * w * 2 + static_cast<size_t>(redX) * 2];
+        const uint8_t* b = &buf[static_cast<size_t>(y) * w * 2 + static_cast<size_t>(blueX) * 2];
+        Check(r[0] == 82 && r[1] == 90 && r[3] == 240, "YUY2 red bar is Y=82 U=90 V=240");
+        Check(b[0] == 41 && b[1] == 240 && b[3] == 110, "YUY2 blue bar is Y=41 U=240 V=110");
+    }
+    {
+        FrameGenerator gen;
+        std::vector<uint8_t> buf(FrameBytes(PixelFormat::NV12, w, h));
+        gen.Write(PixelFormat::NV12, buf.data(), w, w, h, 1);
+        const uint8_t* chroma = buf.data() + static_cast<size_t>(w) * h;  // interleaved U V
+        const uint8_t* r = chroma + static_cast<size_t>(y / 2) * w + static_cast<size_t>(redX / 2) * 2;
+        const uint8_t* b = chroma + static_cast<size_t>(y / 2) * w + static_cast<size_t>(blueX / 2) * 2;
+        Check(r[0] == 90 && r[1] == 240, "NV12 red bar chroma is U=90 then V=240");
+        Check(b[0] == 240 && b[1] == 110, "NV12 blue bar chroma is U=240 then V=110");
+    }
+    {
+        FrameGenerator gen;
+        std::vector<uint8_t> buf(FrameBytes(PixelFormat::RGB32, w * 4, h));
+        gen.Write(PixelFormat::RGB32, buf.data(), w * 4, w, h, 1);
+        const uint8_t* r = &buf[static_cast<size_t>(y) * w * 4 + static_cast<size_t>(redX) * 4];
+        const uint8_t* b = &buf[static_cast<size_t>(y) * w * 4 + static_cast<size_t>(blueX) * 4];
+        Check(r[0] == 0 && r[1] == 0 && r[2] == 255, "RGB32 red bar is B=0 G=0 R=255 in memory order");
+        Check(b[0] == 255 && b[1] == 0 && b[2] == 0, "RGB32 blue bar is B=255 G=0 R=0 in memory order");
+    }
+}
+
 void TestBadArguments() {
     FrameGenerator gen;
     std::vector<uint8_t> buf(1 << 20);
@@ -104,6 +140,7 @@ int main() {
     TestSizes();
     TestNoOverrun();
     TestPicture();
+    TestColourEncoding();
     TestBadArguments();
     if (g_failures == 0) std::printf("All frame generator checks passed.\n");
     return g_failures == 0 ? 0 : 1;

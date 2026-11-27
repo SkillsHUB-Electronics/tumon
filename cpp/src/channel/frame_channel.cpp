@@ -112,6 +112,11 @@ bool FrameChannelServer::ProducerAlive() const {
     return GetTickCount64() - static_cast<ULONGLONG>(tick) < kProducerTimeoutMs;
 }
 
+uint64_t FrameChannelServer::LatestFrame() const {
+    if (!header_ || header_->magic != kChannelMagic) return 0;
+    return static_cast<uint64_t>(InterlockedCompareExchange64(const_cast<volatile LONG64*>(&header_->latestFrame), 0, 0));
+}
+
 bool FrameChannelServer::ReadLatest(uint64_t* lastFrame, std::vector<uint8_t>* data, FrameInfo* info) {
     if (!header_ || header_->magic != kChannelMagic || header_->version != kChannelVersion) return false;
     const LONG index = header_->latestSlot;
