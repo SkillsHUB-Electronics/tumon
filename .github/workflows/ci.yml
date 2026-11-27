@@ -4,9 +4,27 @@ on:
   push:
   pull_request:
 
-# Placeholder pipeline for the documentation-only phase. When code arrives, add the Windows job that
-# builds the native camera DLL with MSVC (CMake), runs ctest and pytest, as Tapis does.
+permissions:
+  contents: read
+
 jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S cpp -B build -A x64
+      - name: Build (camera DLL, app, tools, tests)
+        run: cmake --build build --config Release
+      - name: Unit tests
+        run: ctest --test-dir build -C Release --output-on-failure -E source_selftest
+      # Loads the camera DLL and reads frames through Media Foundation. Server images may lack parts of Media
+      # Foundation, so a failure here is shown but does not fail the run. Make it required once it is known to pass.
+      - name: Media source self-test (informational)
+        continue-on-error: true
+        run: ctest --test-dir build -C Release --output-on-failure -R source_selftest
+      # Not covered by CI: registering the camera, the app's window, real cameras and TeamTalk.
+
   repo-structure:
     runs-on: ubuntu-latest
     steps:
@@ -16,7 +34,7 @@ jobs:
           for f in README.md CLAUDE.md AGENTS.md CHANGELOG.md ROADMAP.md CONTRIBUTING.md SECURITY.md \
                    PRIVACY.md THIRD_PARTY_NOTICES.md CODE_OF_CONDUCT.md LICENSE .gitignore \
                    docs/README.md docs/architecture.md docs/building.md docs/accessibility.md \
-                   docs/troubleshooting.md docs/releasing.md; do
+                   docs/troubleshooting.md docs/releasing.md packaging/windows/installer.iss; do
             test -f "$f" || { echo "missing: $f"; exit 1; }
           done
       - name: Changelog has an Unreleased section

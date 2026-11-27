@@ -62,6 +62,12 @@ All notable changes to Tumon are listed here. The format follows
   gains `-Permanent`; `uninstall-test-camera.ps1` removes a permanent camera first. Built; `status` and the
   non-administrator refusal checked; the permanent install itself not yet run (needs the user's administrator shell).
 
+### Added (CI)
+- `.github/workflows/ci.yml` now has a **Windows job**: configure and build all native targets (camera DLL, app, tools,
+  tests) and run the three unit tests. The media-source self-test runs too but is informational for now, because server
+  images may lack parts of Media Foundation. CI does not cover camera registration, the app window, real cameras or
+  TeamTalk. The same steps pass in a fresh build folder locally; the run on GitHub is still to be seen.
+
 ### Added (the app)
 - **`Tumon.exe`, the first app** (native Win32, version 0.1.0, [ADR 0002](docs/decisions/0002-native-win32-app.md)):
   choose a camera, Start or Stop, status text announced to screen readers, "start sending when Tumon opens", "open
