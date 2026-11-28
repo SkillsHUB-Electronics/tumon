@@ -7,6 +7,13 @@ All notable changes to Tumon are listed here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-11-28
+
+First public preview (pre-release, installer not code-signed). Tumon Camera is listed by TeamTalk 5.23, fills its
+resolution list by itself and shows a laptop camera's picture; the `Tumon.exe` app, the installer (Windows 11) and CI
+are included. Known limitations are in [the release notes](docs/release-notes/v0.1.0.md). The entries below record how
+it was built, including findings that were later corrected.
+
 ### Added
 - Project scaffold: `README.md`, `CLAUDE.md`, `AGENTS.md`, `CHANGELOG.md`, `ROADMAP.md`,
   `CONTRIBUTING.md`, `SECURITY.md`, `PRIVACY.md`, `THIRD_PARTY_NOTICES.md`, `CODE_OF_CONDUCT.md`,
@@ -61,6 +68,11 @@ All notable changes to Tumon are listed here. The format follows
   documented behaviour that the same parameters reopen the same camera and `Remove` deletes it. `install-test-camera.ps1`
   gains `-Permanent`; `uninstall-test-camera.ps1` removes a permanent camera first. Built; `status` and the
   non-administrator refusal checked; the permanent install itself not yet run (needs the user's administrator shell).
+
+### Added (release preparation)
+- Draft release notes for 0.1.0 (`docs/release-notes/v0.1.0.md`, English with a Bahasa Indonesia summary and known
+  limitations). Release candidate built from commit `062bbeb` in a clean folder: 4 of 4 tests pass, the programs need
+  no Visual C++ redistributable. Published as a pre-release with this version.
 
 ### Added (logo)
 - The Tumon logo (`assets/logo/tumon-logo.png`) is now used: a rounded dark blue tile with a T and a camera shape
@@ -197,5 +209,5 @@ All notable changes to Tumon are listed here. The format follows
   `TeamTalk5.dll` (with the caveat that they do not prove camera-path support), and a "YUY2 first, modest
   resolution" working assumption.
 
-### Notes
-- Version `0.0.0`: planning only. Nothing is installable.
+[Unreleased]: https://github.com/SkillsHUB-Electronics/tumon/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/SkillsHUB-Electronics/tumon/releases/tag/v0.1.0

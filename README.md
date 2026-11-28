@@ -9,71 +9,64 @@
 </p>
 
 <p align="center">
-  Tumon takes video from a USB webcam, a laptop camera or a phone, and presents it to other apps as
-  a camera called <i>Tumon Camera</i>. It is built so that <b>TeamTalk 5</b> lists it, which
-  OBS Virtual Camera and recent SplitCam do not.<br>
+  Tumon takes the picture from your laptop camera or USB webcam and presents it as a camera called
+  <i>Tumon Camera</i>, which <b>TeamTalk 5</b> lists and sets up by itself.<br>
   <i>By SkillsHUB Electronics. Sister project of <a href="https://github.com/SkillsHUB-Electronics/tapis">Tapis</a>, the microphone noise filter.</i>
 </p>
 
-> **Status: early (v0.0.0).** Milestone 0 passed on 2026-11-23: a Media Foundation test camera is listed by
-> TeamTalk 5.23, fills its resolution list by itself and shows video. There is **no installable product yet**; the
-> repository holds the research, that test camera (`cpp/`), the design and the project documentation. See the
-> [roadmap](ROADMAP.md) and the [changelog](CHANGELOG.md).
+<p align="center">
+  <a href="https://github.com/SkillsHUB-Electronics/tumon/releases"><b>Download (0.1.0 preview)</b></a>
+</p>
 
-## The app (built, not released yet)
+> **Status: early preview (0.1.0).** Tried on one Windows 11 PC with TeamTalk 5.23 and its built-in camera. The
+> installer is **not code-signed**. Read the [known limitations](docs/release-notes/v0.1.0.md#known-limitations)
+> before using it. Bahasa Indonesia: lihat [catatan rilis](docs/release-notes/v0.1.0.md#bahasa-indonesia).
 
-`Tumon.exe` lets you pick a camera (laptop or USB webcam) and press **Start**; TeamTalk then sees it as "Tumon Camera"
-with its resolution list filled in. The real camera turns on only while some program is using Tumon Camera. It has a
-notification-area icon, can start with Windows, speaks English and Bahasa Indonesia, and uses standard Windows controls
-for screen readers. An installer script exists; there is no downloadable release yet.
+## Use it
+
+1. Download `Tumon-Setup-0.1.0.exe` from the [releases page](https://github.com/SkillsHUB-Electronics/tumon/releases)
+   and run it (Windows 11, administrator).
+2. Open **Tumon**, choose your camera, press **Start**.
+3. In TeamTalk, *Preferences › Video Capture*: device **Tumon Camera**, **640x480, FPS 30**, image format **YUY2**.
+   Then turn on video transmission.
+
+The real camera turns on only while some program is using Tumon Camera.
 
 ## Why Tumon
 
-TeamTalk is popular with blind and low-vision users, and it is picky about cameras. Virtual cameras that
-work in Teams, Zoom or Meet are often missing from its video device list, and many recent laptop cameras are
-not listed or fail to open. Iriun Webcam is still listed. Early measurements (see the
-[device probe results](docs/research/probe-results-2026-11-23.md)) suggest two hurdles: TeamTalk **lists** real
-Windows cameras (such as Iriun) but not pure DirectShow filters (OBS, recent SplitCam), and a listed camera must
-still **start** with a format and size TeamTalk can capture (probably YUY2 at a modest resolution).
-Tumon will therefore be a real Windows camera that presents TeamTalk-friendly formats and sizes, converting from
-whatever the real camera gives.
-On top of that it adds what Iriun does not: use of any local camera, phone as a camera, simple effects, and an
-interface that works with screen readers. This is a hypothesis until the Milestone 0 tests confirm it.
+TeamTalk is popular with blind and low-vision users, and it is picky about cameras:
 
-The evidence is in [docs/research/teamtalk-iriun-findings.md](docs/research/teamtalk-iriun-findings.md); the first
-architecture decision, still unproven, is in
-[docs/decisions/0001-media-foundation-virtual-camera.md](docs/decisions/0001-media-foundation-virtual-camera.md).
+- It lists only real Windows cameras (Media Foundation). OBS Virtual Camera and recent SplitCam are DirectShow
+  filters, so TeamTalk does not show them.
+- It fills its resolution list only from a camera's **YUY2** formats. Many laptop cameras offer only NV12, so you have
+  to type a "custom video format" and it fails if one number is wrong.
 
-## Planned features
+Tumon is a real Windows camera that offers YUY2 and converts whatever your camera gives. The measurements behind this
+are in [docs/research](docs/research/teamtalk-iriun-findings.md) and the decision in
+[ADR 0001](docs/decisions/0001-media-foundation-virtual-camera.md).
 
-| Area | Plan |
-|---|---|
-| **Virtual camera** | "Tumon Camera" registered as a Windows camera, visible to TeamTalk, Teams, Zoom, Meet, Discord, browsers |
-| **Sources** | USB webcam, laptop webcam, Android phone (Wi-Fi and USB), later iPhone, screen or window |
-| **Processing** | Resolution and frame-rate choice, flip and rotate, crop, brightness and contrast, optional background blur |
-| **Interface** | Full keyboard navigation, screen-reader labels, English and Bahasa Indonesia, light and dark themes |
-| **Control** | Command line and MCP server, same approach as Tapis |
-| **Privacy** | Video stays on your PC and your local network; nothing is uploaded |
+## Features
 
-Nothing in this table is implemented yet. Status per feature lives in the [roadmap](ROADMAP.md).
+| Area | In 0.1.0 | Planned |
+|---|---|---|
+| **Virtual camera** | "Tumon Camera" as a permanent Windows camera, YUY2, NV12, RGB32 and I420 at 320x240, 640x480, 1280x720 | |
+| **Sources** | Laptop and USB cameras (USB not yet tested) | Phone as a camera, screen or window |
+| **Processing** | Fits the picture into the chosen size without stretching | Flip, rotate, crop, brightness, background blur |
+| **Interface** | Standard Windows controls (names and roles for screen readers), English and Bahasa Indonesia, tray icon, start with Windows | Dark theme, shortcuts help |
+| **Control** | Console tools | Command line and MCP server, as in Tapis |
+| **Privacy** | Video stays on your PC; the camera is on only while used | |
 
-## Requirements (planned)
-
-- Windows 11 is the target. Whether Windows 10 can be supported depends on the camera technology chosen in
-  Milestone 0 (see [ADR 0001](docs/decisions/0001-media-foundation-virtual-camera.md)).
-- TeamTalk 5 (tested target: 5.23).
+Status per item: [roadmap](ROADMAP.md). History: [changelog](CHANGELOG.md).
 
 ## Documentation
 
 | Document | What it covers |
 |---|---|
 | [docs/README.md](docs/README.md) | Index of all documentation |
+| [docs/troubleshooting.md](docs/troubleshooting.md) | Camera not listed, colours on a phone, uninstall |
+| [docs/building.md](docs/building.md) | Toolchain and build steps |
 | [docs/architecture.md](docs/architecture.md) | Components, data flow, folder layout |
-| [docs/research/teamtalk-iriun-findings.md](docs/research/teamtalk-iriun-findings.md) | What we measured on Iriun, OBS, SplitCam and TeamTalk |
-| [docs/decisions/](docs/decisions/) | Architecture decision records |
-| [docs/building.md](docs/building.md) | Toolchain and build steps (planned) |
 | [docs/accessibility.md](docs/accessibility.md) | Screen-reader and keyboard requirements |
-| [docs/troubleshooting.md](docs/troubleshooting.md) | Camera not listed, black picture, and similar |
 | [CONTRIBUTING.md](CONTRIBUTING.md) · [SECURITY.md](SECURITY.md) · [PRIVACY.md](PRIVACY.md) | Project policies |
 | [AGENTS.md](AGENTS.md) · [CLAUDE.md](CLAUDE.md) | Instructions for AI agents |
 

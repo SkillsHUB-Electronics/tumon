@@ -56,11 +56,14 @@ cameras but not pure DirectShow filters, and a listed camera must **start** with
 - [ ] Check that Tumon opened by the new installer runs as the normal user (not administrator).
 - [x] Uninstall tested on this PC (2026-11-28): camera, files, registration, shortcut and uninstall entry removed.
 - [ ] Confirm the "open at sign-in" entry is removed by uninstall (tick it first), and that no empty folder stays.
+- [x] Release candidate built from the committed code (clean build, 4 of 4 tests, no Visual C++ redistributable needed).
+- [x] Release notes drafted (`docs/release-notes/v0.1.0.md`).
 - [ ] Test the installer on a second Windows 11 PC that has never had Tumon.
 - [ ] Decide about code signing (without it Windows SmartScreen warns).
 - [ ] Restrict who may write to the frame channel, or state the limitation in the release notes (SECURITY.md).
 - [x] App icon from the Tumon logo (app, tray, installer).
-- [ ] GitHub release `v0.1.0` (published by the maintainer).
+- [x] GitHub release `v0.1.0` as a pre-release (2026-11-28, on the maintainer's instruction), unsigned, limitations
+  stated in the notes.
 - [ ] Known and accepted for now: the TeamTalk phone app shows red and blue swapped; some lag on phones.
 - [ ] Resolution and frame-rate selection; safe fallback picture when no source is active.
 - [ ] Installer (Inno Setup): registers and unregisters the camera cleanly; code-signed.

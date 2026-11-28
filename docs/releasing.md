@@ -33,5 +33,5 @@ The version is `0.1.0` in `cpp/CMakeLists.txt`, `cpp/app/resource.h`, `cpp/app/a
 ## Versioning
 
 [Semantic Versioning](https://semver.org/): a new feature bumps the minor version (0.1.0 → 0.2.0), a fix
-bumps the patch version (0.1.0 → 0.1.1). 1.0.0 will mark the end of the beta. The repository is at `0.0.0`
-(documentation only).
+bumps the patch version (0.1.0 → 0.1.1). 1.0.0 will mark the end of the beta. The latest release is `0.1.0` (preview)
+.

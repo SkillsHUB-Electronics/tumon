@@ -1,6 +1,6 @@
 # Troubleshooting
 
-> Tumon is not released yet. This page lists the checks planned to be needed, so users and support can
+> Tumon is an early preview. This page lists checks to try; some have not been needed yet. Users and support can
 > use them from day one. It will grow from real reports.
 
 ## "Tumon Camera" is not in my app's camera list

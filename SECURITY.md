@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Tumon has no release yet. Once released, only the latest version receives security fixes.
+Tumon 0.1.0 is an early preview. Only the latest version receives security fixes.
 
 ## Reporting a vulnerability
 

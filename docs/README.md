@@ -7,6 +7,7 @@
 | [Accessibility](accessibility.md) | Contributors | Keyboard and screen-reader requirements, how to test |
 | [Troubleshooting](troubleshooting.md) | Users | Camera not listed, black picture, uninstall |
 | [Releasing](releasing.md) | Maintainers | Version bump, changelog, GitHub release |
+| [Release notes 0.1.0](release-notes/v0.1.0.md) | Users, maintainers | The first preview release: how to use it and known limitations |
 | [Research: TeamTalk and Iriun](research/teamtalk-iriun-findings.md) | Everyone | What we measured and what it implies |
 | [Research: device probe results](research/probe-results-2026-11-23.md) | Everyone | Formats offered by Iriun, OBS, SplitCam and a laptop camera |
 | [Device probe tool](../tools/device-probe/README.md) | Contributors | How to build and run the probe |
@@ -18,4 +19,4 @@ Project-level files are in the repository root: [README](../README.md), [CHANGEL
 [ROADMAP](../ROADMAP.md), [CONTRIBUTING](../CONTRIBUTING.md), [SECURITY](../SECURITY.md),
 [PRIVACY](../PRIVACY.md), [AGENTS](../AGENTS.md) and [CLAUDE](../CLAUDE.md).
 
-Everything here describes the **planned** design unless a page says otherwise; no code exists yet.
+Parts marked *planned* describe things that are not built yet.

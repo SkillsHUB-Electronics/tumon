@@ -1,6 +1,6 @@
 # Privacy
 
-*Design statement for a project that has no release yet. It will be updated before any version that
+*For Tumon 0.1.0, which sends nothing off the PC by itself. This page is updated before any version that
 sends data anywhere.*
 
 - **Video is processed on your PC.** Frames from your cameras are passed from the Tumon app to the virtual

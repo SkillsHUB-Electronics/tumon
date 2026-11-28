@@ -37,7 +37,8 @@ Key facts that are easy to miss:
 - **Stack:** everything is C++17 + CMake. The app is native Win32 (`cpp/app`, [ADR 0002](docs/decisions/0002-native-win32-app.md),
   the user chose this over the earlier Python + PySide6 plan), the feeder engine is `cpp/src/feeder` (shared with the
   console tool), the installer is Inno Setup (`packaging/windows/installer.iss`; compiled; install, upgrade and uninstall
-  verified on the author's PC, unsigned, no release published). CI (`.github/workflows/ci.yml`)
+  verified on the author's PC, unsigned). **v0.1.0 is published as a GitHub pre-release** (2026-11-28, with the
+  maintainer's explicit approval; later releases need their approval again). CI (`.github/workflows/ci.yml`)
   builds on Windows and runs all four CTest tests. Built: camera source DLL, tools, app, installer. Planned: effects, phone camera. Do not describe planned things as existing. App strings go
   into both tables in `cpp/app/strings.h` (English and Bahasa Indonesia).
 - **Do not copy code, names or assets from Iriun, OBS or SplitCam.** Study behaviour, write our own.
