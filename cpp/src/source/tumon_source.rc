@@ -1,0 +1,4 @@
+// The picture shown while nothing is sending a camera (made by tools/make_idle.py from assets/idle).
+#include <windows.h>
+
+IDLEART RCDATA "idle.png"

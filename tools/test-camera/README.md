@@ -1,7 +1,8 @@
 # Trying the Tumon test camera
 
-The test camera draws colour bars with a moving black line and a frame counter, offered in YUY2, NV12, RGB32 and
-I420 at 640x480, 320x240 and 1280x720. It exists to answer one question: **does TeamTalk list it, fill its
+The test camera shows the Tumon logo with a turning circle, offered in YUY2, NV12, RGB32 and I420 at 640x480,
+320x240 and 1280x720. It started as a colour-bar test picture, which remains only as the fallback if the artwork
+cannot be loaded. It exists to answer one question: **does TeamTalk list it, fill its
 resolution list by itself, and show the picture?**
 
 > Registering a camera changes the system (a registry key under HKEY_LOCAL_MACHINE and a folder in Program Files).
@@ -49,7 +50,7 @@ Check at any time (normal PowerShell): `& "$env:ProgramFiles\Tumon\tumon_vcam_ct
 
 ## 5. Test
 
-- Windows **Camera** app: "Tumon Camera" should show the colour bars.
+- Windows **Camera** app: "Tumon Camera" should show the Tumon logo and turning circle.
 - **TeamTalk 5 › Preferences › Video Capture**: is "Tumon Camera" in the device list? Does *Video Resolution* fill in
   by itself (not just "Custom video format")? What does the *Image Format* dropdown offer? Does *Test Selected* show
   the picture? Does starting video from the main window work?
@@ -61,7 +62,7 @@ Check at any time (normal PowerShell): `& "$env:ProgramFiles\Tumon\tumon_vcam_ct
 powershell -ExecutionPolicy Bypass -File .\tools\test-camera\uninstall-test-camera.ps1
 ```
 
-## Show a real camera instead of the colour bars (feeder)
+## Show a real camera instead of the logo picture (feeder)
 
 After installing the **current** build (run `install-test-camera.ps1 -Permanent` again as administrator: it updates the
 DLL and restarts the Frame Server for a moment), start the feeder in a normal PowerShell window and leave it open:
@@ -72,7 +73,7 @@ DLL and restarts the Frame Server for a moment), start the feeder in a normal Po
 
 `--list` shows the camera names (for a USB webcam use its name, or `--index N`). Then select Tumon Camera in
 TeamTalk. The feeder opens the real camera only while Tumon Camera is in use and closes it afterwards. Without a
-feeder, Tumon Camera shows the colour bars. Ctrl+C stops the feeder.
+feeder, Tumon Camera shows the logo picture. Ctrl+C stops the feeder.
 
 ## Test with a second TeamTalk client (does someone else see the video?)
 

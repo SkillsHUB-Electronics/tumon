@@ -65,7 +65,9 @@ cameras but not pure DirectShow filters, and a listed camera must **start** with
 - [x] GitHub release `v0.1.0` as a pre-release (2026-11-28, on the maintainer's instruction), unsigned, limitations
   stated in the notes.
 - [ ] Known and accepted for now: the TeamTalk phone app shows red and blue swapped; some lag on phones.
-- [ ] Resolution and frame-rate selection; safe fallback picture when no source is active.
+- [ ] Resolution and frame-rate selection.
+- [x] Fallback picture when no source is active: the Tumon artwork with a turning circle (automated tests; not yet seen
+  in TeamTalk, not in a release).
 - [ ] Installer (Inno Setup): registers and unregisters the camera cleanly; code-signed.
 - [ ] Keyboard-only and Narrator-tested interface, English and Bahasa Indonesia.
 

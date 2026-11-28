@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "formats.h"
+#include "idle_loader.h"
 #include "trace.h"
 #include "yuy2_scaler.h"
 
@@ -90,6 +91,17 @@ void MediaStream::SleepPrecisely(MFTIME hundredNs) {
 HRESULT MediaStream::Initialize(IMFMediaSource* source, DWORD index) {
     if (!source) return E_POINTER;
     source_ = source;
+
+    // The artwork lives in this DLL; find the module from the address of one of its functions.
+    HMODULE module = nullptr;
+    std::vector<uint8_t> art;
+    int artWidth = 0, artHeight = 0;
+    if (GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                           reinterpret_cast<LPCWSTR>(&LoadIdleArt), &module) &&
+        LoadIdleArt(module, &art, &artWidth, &artHeight)) {
+        idle_.SetArt(std::move(art), artWidth, artHeight);
+    }
+    if (!idle_.Ready()) Trace(L"MediaStream: idle artwork not loaded, using colour bars");
 
     HRESULT hr = SetGUID(MF_DEVICESTREAM_STREAM_CATEGORY, PINNAME_VIDEO_CAPTURE);
     if (FAILED(hr)) return hr;
@@ -172,6 +184,9 @@ bool MediaStream::Render(uint8_t* dst, int stride, int width, int height) {
     if (lastWasLive_) Trace(L"MediaStream: feeder stopped, back to the test pattern");
     lastWasLive_ = false;
     ++patternFrames_;
+    if (idle_.Ready() && idle_.Draw(generator_.Canvas(width, height), width, height, frame_)) {
+        return generator_.WriteCanvas(format_, dst, stride, width, height);
+    }
     return generator_.Write(format_, dst, stride, width, height, frame_);
 }
 
