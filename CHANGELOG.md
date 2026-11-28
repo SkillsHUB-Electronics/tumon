@@ -7,6 +7,12 @@ All notable changes to Tumon are listed here. The format follows
 
 ## [Unreleased]
 
+### Verified
+- The published `v0.1.0` installer, downloaded from GitHub (hash matches the release), installed on the build PC: one
+  uninstall entry "Tumon version 0.1.0", program files from the release build, Tumon Camera present. The downloaded
+  file carried no "mark of the web" when checked, so whether SmartScreen would warn is not established.
+- With that installation the video shows in TeamTalk (user-reported).
+
 ## [0.1.0] - 2026-11-28
 
 First public preview (pre-release, installer not code-signed). Tumon Camera is listed by TeamTalk 5.23, fills its
