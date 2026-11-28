@@ -57,6 +57,11 @@ Name: "{autodesktop}\Tumon"; Filename: "{app}\Tumon.exe"; Tasks: desktopicon
 ; nothing. Accepted for 0.1.0.
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: none; ValueName: "Tumon"; Flags: dontcreatekey uninsdeletevalue
 
+[UninstallDelete]
+; Setup only removes folders it created itself. If C:\Program Files\Tumon already existed (an earlier test install),
+; it would stay behind, empty.
+Type: dirifempty; Name: "{app}"
+
 [Run]
 Filename: "{app}\tumon_vcam_ctl.exe"; Parameters: "install"; StatusMsg: "Adding Tumon Camera..."; Flags: runhidden waituntilterminated
 ; Started through Explorer so Tumon never runs as administrator, even if Setup was launched from an administrator

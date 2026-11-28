@@ -54,7 +54,8 @@ cameras but not pure DirectShow filters, and a listed camera must **start** with
 - [x] First install verified on this PC (2026-11-27).
 - [x] Upgrade over an installed copy works (2026-11-27); video shows in TeamTalk with the installed app.
 - [ ] Check that Tumon opened by the new installer runs as the normal user (not administrator).
-- [ ] Test uninstall on this PC.
+- [x] Uninstall tested on this PC (2026-11-28): camera, files, registration, shortcut and uninstall entry removed.
+- [ ] Confirm the "open at sign-in" entry is removed by uninstall (tick it first), and that no empty folder stays.
 - [ ] Test the installer on a second Windows 11 PC that has never had Tumon.
 - [ ] Decide about code signing (without it Windows SmartScreen warns).
 - [ ] Restrict who may write to the frame channel, or state the limitation in the release notes (SECURITY.md).

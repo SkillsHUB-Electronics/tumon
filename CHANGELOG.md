@@ -62,6 +62,15 @@ All notable changes to Tumon are listed here. The format follows
   gains `-Permanent`; `uninstall-test-camera.ps1` removes a permanent camera first. Built; `status` and the
   non-administrator refusal checked; the permanent install itself not yet run (needs the user's administrator shell).
 
+### Verified (uninstall)
+- Uninstalling Tumon 0.1.0 on the build PC removed the camera (Windows no longer lists it), the camera registration,
+  all program files, the Start menu shortcut and the uninstall entry; no "open at sign-in" entry remained. Per-user
+  settings stay on purpose. Whether "open at sign-in" had been ticked before the test is not confirmed.
+
+### Fixed (uninstall)
+- An empty `C:\Program Files\Tumon` folder stayed behind, because it already existed from the earlier test install and
+  Setup only removes folders it created. The installer now removes it if empty (recompiled; this fix not yet re-tested).
+
 ### Added (CI)
 - `.github/workflows/ci.yml` now has a **Windows job**: configure and build all native targets (camera DLL, app, tools,
   tests) and run the three unit tests. The media-source self-test runs too but is informational for now, because server
