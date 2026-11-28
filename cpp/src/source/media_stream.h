@@ -19,6 +19,7 @@
 #include "attributes.h"
 #include "com_impl.h"
 #include "frame_generator.h"
+#include "idle_screen.h"
 
 namespace tumon {
 
@@ -69,6 +70,7 @@ private:
     std::mutex lock_;
     MF_STREAM_STATE state_ = MF_STREAM_STATE_STOPPED;
     FrameGenerator generator_;
+    IdleScreen idle_;  // shown while nothing is sending (colour bars only if the artwork cannot be loaded)
     PixelFormat format_ = PixelFormat::YUY2;
     UINT32 width_ = 640;
     UINT32 height_ = 480;

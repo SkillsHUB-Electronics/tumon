@@ -19,11 +19,14 @@ add_library(tumon_source SHARED
     src/source/activator.cpp
     src/source/dllmain.cpp
     src/source/frame_generator.cpp
+    src/source/idle_loader.cpp
+    src/source/idle_screen.cpp
     src/source/media_source.cpp
     src/source/media_stream.cpp
     src/source/yuy2_scaler.cpp
-    src/source/tumon_source.def)
-target_link_libraries(tumon_source PRIVATE mfplat mf mfuuid mfsensorgroup propsys ole32 uuid advapi32)
+    src/source/tumon_source.def
+    src/source/tumon_source.rc)
+target_link_libraries(tumon_source PRIVATE mfplat mf mfuuid mfsensorgroup propsys ole32 uuid advapi32 windowscodecs)
 
 # --- tools ------------------------------------------------------------------------------------------
 add_executable(tumon_vcam_host tools/vcam_host.cpp)
@@ -56,6 +59,9 @@ add_dependencies(tumon_selftest tumon_source)
 enable_testing()
 add_executable(test_frame_generator tests/test_frame_generator.cpp src/source/frame_generator.cpp)
 add_test(NAME frame_generator COMMAND test_frame_generator)
+
+add_executable(test_idle_screen tests/test_idle_screen.cpp src/source/idle_screen.cpp)
+add_test(NAME idle_screen COMMAND test_idle_screen)
 
 add_executable(test_yuy2_scaler tests/test_yuy2_scaler.cpp src/source/yuy2_scaler.cpp)
 add_test(NAME yuy2_scaler COMMAND test_yuy2_scaler)

@@ -192,7 +192,7 @@ bool TestLiveFrames(HMODULE dll) {
     }
     check(observer.Consumers() == 1, L"the source reports one running stream to the feeder");
 
-    // 2. The feeder stops: after the time-out the test pattern comes back.
+    // 2. The feeder stops: after the time-out the idle screen comes back (light artwork up to the top edge).
     stop = true;
     feeder.join();
     Sleep(1400);
@@ -201,7 +201,11 @@ bool TestLiveFrames(HMODULE dll) {
     if (frame.size() == 640u * 480u * 2u) {
         for (int x = 0; x < 640; x += 4) brightest = std::max(brightest, Luma640(frame, x, 2));
     }
-    check(brightest > 150, L"after the feeder stops the test pattern returns");
+    check(brightest > 150, L"after the feeder stops the idle screen returns");
+    // The artwork's emblem is a dark tile on a light background: proves the artwork loaded (not just any picture).
+    if (frame.size() == 640u * 480u * 2u) {
+        check(Luma640(frame, 40, 240) > 180 && Luma640(frame, 265, 205) < 120, L"idle artwork is shown (light background, dark emblem)");
+    }
 
     source->Shutdown();
     activate->ShutdownObject();

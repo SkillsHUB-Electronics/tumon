@@ -7,6 +7,14 @@ All notable changes to Tumon are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed
+- README rewritten in the layout of the sister project Tapis, with a screenshot of the app and of the camera picture;
+  the 0.1.0 release notes shortened to the same style, and the repository's About text, link and topics filled in.
+- With no source running, Tumon Camera now shows the Tumon logo artwork with a turning circle instead of colour bars.
+  A 4:3 size crops the artwork a little at the sides, without black bars. Colour bars remain only as the fallback if
+  the artwork cannot be loaded. Checked by automated tests and by looking at a rendered frame; not yet seen in
+  TeamTalk.
+
 ### Verified
 - The published `v0.1.0` installer, downloaded from GitHub (hash matches the release), installed on the build PC: one
   uninstall entry "Tumon version 0.1.0", program files from the release build, Tumon Camera present. The downloaded

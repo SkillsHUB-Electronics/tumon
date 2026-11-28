@@ -15,7 +15,8 @@
 
 ## The picture is black or shows the fallback image
 
-- Start a source in the Tumon app. With no source running, the camera shows the fallback picture on purpose.
+- Start a source in the Tumon app. With no source running, the camera shows the fallback picture on purpose: the
+  Tumon logo with a turning circle (version 0.1.0 shows colour bars instead).
 - Another app may be using the physical webcam exclusively; close it, or choose a different source.
 
 ## The picture is delayed or choppy
@@ -25,10 +26,12 @@
 
 ## Colours look wrong on someone's phone (orange looks purple, red and blue swapped)
 
-Seen with the TeamTalk phone app, while the same video was correct on a laptop receiver. Test: stop the feeder so
-Tumon Camera shows its colour bars (white, yellow, cyan, green, magenta, red, blue from the left) and look at the
-receiver. If a laptop shows them right and the phone shows white, cyan, yellow, green, magenta, blue, red, the
-phone app is swapping red and blue when it draws the picture; Tumon's output is correct (it is unit-tested). Check
+Seen with the TeamTalk phone app, while the same video was correct on a laptop receiver. Test: press Stop in Tumon
+(or stop the feeder) so Tumon Camera shows its fallback picture, which is blue (logo and waves along the bottom),
+and look at the receiver. If a laptop shows it blue and the phone shows it orange or brown, the phone app is swapping
+red and blue when it draws the picture; Tumon's output is correct (the format conversion is unit-tested). With
+version 0.1.0 the fallback is colour bars (white, yellow, cyan, green, magenta, red, blue from the left); a swapped
+receiver shows white, cyan, yellow, green, magenta, blue, red. Check
 whether the same phone shows other cameras the same way, and report it to the TeamTalk developers with the app
 version. Do not try to fix it in Tumon: swapping the colours there would break every correct receiver.
 
