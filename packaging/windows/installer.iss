@@ -34,6 +34,7 @@ SolidCompression=yes
 WizardStyle=modern
 AppMutex=Local\TumonApp
 UninstallDisplayIcon={app}\Tumon.exe
+SetupIconFile=..\..\cpp\app\tumon.ico
 
 [Tasks]
 Name: desktopicon; Description: "Create a &desktop shortcut"; Flags: unchecked

@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo/tumon-logo.png" width="200" alt="Tumon logo: a dark blue rounded tile with a white and light blue letter T and a camera lens shape, above the word tumon">
+</p>
+
 <h1 align="center">Tumon</h1>
 
 <p align="center">

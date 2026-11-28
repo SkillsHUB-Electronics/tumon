@@ -62,6 +62,13 @@ All notable changes to Tumon are listed here. The format follows
   gains `-Permanent`; `uninstall-test-camera.ps1` removes a permanent camera first. Built; `status` and the
   non-administrator refusal checked; the permanent install itself not yet run (needs the user's administrator shell).
 
+### Added (logo)
+- The Tumon logo (`assets/logo/tumon-logo.png`) is now used: a rounded dark blue tile with a T and a camera shape
+  (chosen over a first, framed-camera design because it stays readable at 16 to 24 pixels). The tile, without the word,
+  with a transparent background, is the icon of `Tumon.exe` (window, taskbar, Alt+Tab, Start menu), its notification-area icon and the
+  installer (`cpp/app/tumon.ico`, 16 to 256 pixels). The README shows the full logo. `tools/make_icon.py` (Pillow)
+  rebuilds the icon from the logo. Checked: the built programs contain the icon; preview on light and dark backgrounds.
+
 ### Verified (uninstall)
 - Uninstalling Tumon 0.1.0 on the build PC removed the camera (Windows no longer lists it), the camera registration,
   all program files, the Start menu shortcut and the uninstall entry; no "open at sign-in" entry remained. Per-user

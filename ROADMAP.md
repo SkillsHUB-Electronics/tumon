@@ -59,7 +59,7 @@ cameras but not pure DirectShow filters, and a listed camera must **start** with
 - [ ] Test the installer on a second Windows 11 PC that has never had Tumon.
 - [ ] Decide about code signing (without it Windows SmartScreen warns).
 - [ ] Restrict who may write to the frame channel, or state the limitation in the release notes (SECURITY.md).
-- [ ] App icon.
+- [x] App icon from the Tumon logo (app, tray, installer).
 - [ ] GitHub release `v0.1.0` (published by the maintainer).
 - [ ] Known and accepted for now: the TeamTalk phone app shows red and blue swapped; some lag on phones.
 - [ ] Resolution and frame-rate selection; safe fallback picture when no source is active.

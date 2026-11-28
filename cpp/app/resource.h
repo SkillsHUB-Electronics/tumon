@@ -2,6 +2,7 @@
 #pragma once
 
 #define IDD_MAIN 100
+#define IDI_TUMON 101  // the app icon (tumon.ico, made by tools/make_icon.py)
 
 #define IDC_CAMERA_LABEL 1001
 #define IDC_CAMERA 1002

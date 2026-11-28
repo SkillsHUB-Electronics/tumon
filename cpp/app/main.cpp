@@ -95,6 +95,13 @@ std::wstring DescribeStatus() {
     return t.statusStopped;
 }
 
+// The Tumon icon at the size Windows wants for small (tray, title bar) or large (Alt+Tab) use.
+HICON AppIcon(bool large) {
+    return static_cast<HICON>(LoadImageW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(IDI_TUMON), IMAGE_ICON,
+                                         GetSystemMetrics(large ? SM_CXICON : SM_CXSMICON),
+                                         GetSystemMetrics(large ? SM_CYICON : SM_CYSMICON), LR_SHARED));
+}
+
 // ------------------------------------------------------------------------------------------ tray icon
 
 NOTIFYICONDATAW TrayData() {
@@ -109,7 +116,7 @@ void TrayAdd() {
     NOTIFYICONDATAW data = TrayData();
     data.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP | NIF_SHOWTIP;
     data.uCallbackMessage = WM_APP_TRAY;
-    data.hIcon = LoadIconW(nullptr, IDI_APPLICATION);
+    data.hIcon = AppIcon(false);
     wcscpy_s(data.szTip, L"Tumon");
     Shell_NotifyIconW(NIM_ADD, &data);
     data.uVersion = NOTIFYICON_VERSION_4;  // keyboard users get NIN_KEYSELECT and WM_CONTEXTMENU
@@ -276,8 +283,8 @@ INT_PTR CALLBACK MainDialog(HWND window, UINT message, WPARAM wParam, LPARAM lPa
     switch (message) {
         case WM_INITDIALOG: {
             g_app.window = window;
-            SendMessageW(window, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(LoadIconW(nullptr, IDI_APPLICATION)));
-            SendMessageW(window, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(LoadIconW(nullptr, IDI_APPLICATION)));
+            SendMessageW(window, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(AppIcon(false)));
+            SendMessageW(window, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(AppIcon(true)));
             TrayAdd();
             CheckDlgButton(window, IDC_AUTOSTART, g_app.settings.startSendingOnOpen ? BST_CHECKED : BST_UNCHECKED);
             CheckDlgButton(window, IDC_RUNATLOGIN, tumon::IsRunAtLogin() ? BST_CHECKED : BST_UNCHECKED);

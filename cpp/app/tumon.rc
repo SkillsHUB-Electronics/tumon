@@ -26,6 +26,9 @@ BEGIN
     PUSHBUTTON      "", IDC_EXIT, 232, 213, 61, 15
 END
 
+// The first icon resource is also the program's icon in Explorer, the Start menu and the taskbar.
+IDI_TUMON ICON "tumon.ico"
+
 1 RT_MANIFEST "app.manifest"
 
 VS_VERSION_INFO VERSIONINFO
